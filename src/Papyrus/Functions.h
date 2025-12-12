@@ -2,9 +2,11 @@
 
 #include "Acheron/Misc.h"
 #include "Acheron/Validation.h"
+#include "Util/Misc.h"
 
 namespace Papyrus
-{	namespace Status
+{
+	namespace Status
 	{
 		inline void DisableProcessing(RE::StaticFunctionTag*, bool a_disable) { Settings::ProcessingEnabled = !a_disable; }
 		inline void DisableConsequence(RE::StaticFunctionTag*, bool a_disable) { Settings::ConsequenceEnabled = !a_disable; }
@@ -71,7 +73,7 @@ namespace Papyrus
 	{
 		void SetLinkedRef(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::TESObjectREFR* object, RE::TESObjectREFR* target, RE::BGSKeyword* keyword);
 		std::vector<RE::TESForm*> GetItemsByKeywords(
-			VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::TESObjectREFR* a_container, std::vector<RE::BGSKeyword*> a_kywds, int32_t a_minvalue, bool a_qstitms);
+				VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::TESObjectREFR* a_container, std::vector<RE::BGSKeyword*> a_kywds, int32_t a_minvalue, bool a_qstitms);
 		void RemoveAllItems(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::TESObjectREFR* a_from, RE::TESObjectREFR* a_to, bool a_excludeworn);
 
 		inline void Register(VM* a_vm)
@@ -102,10 +104,10 @@ namespace Papyrus
 
 	namespace Utility
 	{
-		inline void PrintConsole(RE::StaticFunctionTag*, RE::BSFixedString a_msg) { Acheron::PrintConsole(a_msg.c_str()); }
+		inline void PrintConsole(RE::StaticFunctionTag*, RE::BSFixedString a_msg) { Util::PrintConsole(a_msg.c_str()); }
 		bool OpenCustomMenu(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, std::string_view a_filepath);
 		void CloseCustomMenu(RE::StaticFunctionTag*);
-	
+
 		inline void Register(VM* a_vm)
 		{
 			REGISTERFUNC(PrintConsole, "Acheron");
@@ -126,4 +128,4 @@ namespace Papyrus
 		logger::info("Registered Papyrus Functions");
 		return true;
 	}
-}  // namespace Papyrus
+}	 // namespace Papyrus

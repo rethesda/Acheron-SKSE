@@ -77,12 +77,6 @@ namespace Acheron
 		return ret;
 	}
 
-	RE::TESActorBase* GetLeveledActorBase(RE::Actor* a_actor)
-	{
-		const auto base = a_actor->GetTemplateActorBase();
-		return base ? base : a_actor->GetActorBase();
-	}
-
 	bool IsHunter(RE::Actor* a_actor)
 	{
 		return a_actor->HasMagicEffect(GameForms::HunterPrideEffect);
@@ -165,8 +159,8 @@ namespace Acheron
 	bool PlayIdle(RE::AIProcess* proc, RE::Actor* attacker, RE::DEFAULT_OBJECT smth, RE::TESIdleForm* idle, bool a5, bool a6, RE::TESObjectREFR* target)
 	{
 		using func_t = decltype(&PlayIdle);
-		REL::Relocation<func_t> func{ RELID(38290, 38290) };  // TODO: AE RELID
+		REL::Relocation<func_t> func{ RELID(38290, 38290) };	// TODO: AE RELID
 		return func(proc, attacker, smth, idle, a5, a6, target);
 	}
 
-}  // namespace Acheron
+}	 // namespace Acheron

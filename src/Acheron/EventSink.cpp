@@ -7,7 +7,7 @@
 namespace Acheron
 {
 	EventResult EventHandler::ProcessEvent(const RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>*)
-  {
+	{
 		if (!a_event || a_event->holder->IsNot(RE::FormType::ActorCharacter))
 			return EventResult::kContinue;
 
@@ -72,7 +72,7 @@ namespace Acheron
 	}
 
 	EventResult EventHandler::ProcessEvent(const RE::TESFormDeleteEvent* a_event, RE::BSTEventSource<RE::TESFormDeleteEvent>*)
-  {
+	{
 		if (a_event)
 			Defeat::Delete(a_event->formID);
 
@@ -82,7 +82,7 @@ namespace Acheron
 	EventResult EventHandler::ProcessEvent(const RE::TESDeathEvent* a_event, RE::BSTEventSource<RE::TESDeathEvent>*)
 	{
 		if (!a_event || !a_event->actorDying)
-      return EventResult::kContinue;
+			return EventResult::kContinue;
 
 		auto dying = a_event->actorDying->As<RE::Actor>();
 		if (!dying)
@@ -101,12 +101,12 @@ namespace Acheron
 
 	EventResult EventHandler::ProcessEvent(const RE::TESResetEvent* a_event, RE::BSTEventSource<RE::TESResetEvent>*)
 	{
-    if (!a_event || !a_event->object)
-      return EventResult::kContinue;
+		if (!a_event || !a_event->object)
+			return EventResult::kContinue;
 
-    auto reset = a_event->object->As<RE::Actor>();
-    if (!reset)
-      return EventResult::kContinue;
+		auto reset = a_event->object->As<RE::Actor>();
+		if (!reset)
+			return EventResult::kContinue;
 
 		if (Defeat::IsDefeated(reset)) {
 			Defeat::RescueActor(reset, true);
@@ -117,7 +117,7 @@ namespace Acheron
 		}
 
 		return EventResult::kContinue;
-  }
+	}
 
 
 	EventResult EventHandler::ProcessEvent(RE::InputEvent* const* a_event, RE::BSTEventSource<RE::InputEvent*>*)
@@ -179,22 +179,22 @@ namespace Acheron
 				if (idcode == hpkey) {
 					if (player->HasSpell(GameForms::HunterPride)) {
 						player->RemoveSpell(GameForms::HunterPride);
-						RE::DebugNotification("$Achr_HunterPrideRemoved");
+						RE::SendHUDMessage::ShowHUDMessage("$Achr_HunterPrideRemoved");
 					} else {
 						player->AddSpell(GameForms::HunterPride);
-						RE::DebugNotification("$Achr_HunterPrideAdded");
+						RE::SendHUDMessage::ShowHUDMessage("$Achr_HunterPrideAdded");
 					}
 				} else if (idcode == surkey) {
 					const auto agr = Processing::AggressorInfo(nullptr, player);
 					if (!agr.actor) {
 						logger::info("Failed to find a valid aggressor for Surrender");
-						RE::DebugNotification("$Achr_SurrenderNoAggressor");
+						RE::SendHUDMessage::ShowHUDMessage("$Achr_SurrenderNoAggressor");
 						return EventResult::kContinue;
 					}
 					const auto memberList = Resolution::BuildMemberList(player, agr.actor, Resolution::Type::Surrender);
 					if (!Resolution::SelectQuest(Resolution::Type::Surrender, player, memberList, player->IsInCombat(), false)) {
 						logger::info("Failed to select a quest for Surrender");
-						RE::DebugNotification("$Achr_SurrenderNoQuest");
+						RE::SendHUDMessage::ShowHUDMessage("$Achr_SurrenderNoQuest");
 					}
 				}
 				break;
@@ -205,13 +205,13 @@ namespace Acheron
 
 	void EventHandler::CacheWornArmor(const RE::FormID a_form, RE::TESObjectARMO* a_armor)
 	{
-		std::scoped_lock _lock{cache_lock};
+		std::scoped_lock _lock{ cache_lock };
 		worn_cache[a_form].push_back(a_armor);
 	}
 
 	std::vector<RE::TESObjectARMO*> EventHandler::ExtractCachedArmor(const RE::FormID a_form)
 	{
-		std::scoped_lock _lock{cache_lock};
+		std::scoped_lock _lock{ cache_lock };
 		if (auto node = worn_cache.extract(a_form); !node.empty())
 			return std::move(node.mapped());
 		return {};

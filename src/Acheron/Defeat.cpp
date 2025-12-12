@@ -83,7 +83,7 @@ namespace Acheron
 			}
 		}
 		const auto health = a_victim->GetActorValue(RE::ActorValue::kHealth);
-		a_victim->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -health + 0.05f);
+		a_victim->RestoreActorValue(RE::ActorValue::kHealth, -health + 0.05f);
 
 		data->state.store(VictimState::Defeated);
 

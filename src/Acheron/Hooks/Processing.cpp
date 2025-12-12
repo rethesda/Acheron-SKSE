@@ -70,7 +70,7 @@ namespace Acheron
 			if (Settings::bNotifyColored) {
 				base = std::format("<font color = '{}'>{}</font color>", Settings::rNotifyColor, base);
 			}
-			RE::DebugNotification(base.c_str());
+			RE::SendHUDMessage::ShowHUDMessage(base.c_str());
 		}
 
 		if (Settings::bFolWithPlDefeat && a_victim->IsPlayerRef()) {

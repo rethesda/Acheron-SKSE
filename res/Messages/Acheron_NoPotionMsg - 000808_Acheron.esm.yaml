@@ -1,0 +1,7 @@
+FormKey: 000808:Acheron.esm
+EditorID: Acheron_NoPotionMsg
+Description:
+  TargetLanguage: English
+  Value: No health potion available
+INAM: 0x00000000
+DisplayTime: 2

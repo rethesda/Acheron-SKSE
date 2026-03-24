@@ -1,0 +1,34 @@
+FormKey: 000804:Acheron.esm
+EditorID: AcheronBlankPackage
+Flags:
+- IgnoreCombat
+- WeaponsUnequipped
+- NoCombatAlert
+Type: Package
+InterruptOverride: Combat
+PreferredSpeed: Run
+ScheduleMonth: -1
+ScheduleDayOfWeek: Any
+ScheduleHour: -1
+ScheduleMinute: -1
+Unknown3: 0x000000
+PackageTemplate: 0654E2:Skyrim.esm
+DataInputVersion: 1
+Data:
+- Key: 3
+  Value:
+    MutagenObjectType: PackageDataFloat
+- Key: 4
+  Value:
+    MutagenObjectType: PackageDataBool
+    Data: True
+XnamMarker: 0x05
+OnBegin:
+  Topics:
+  - MutagenObjectType: TopicReference
+OnEnd:
+  Topics:
+  - MutagenObjectType: TopicReference
+OnChange:
+  Topics:
+  - MutagenObjectType: TopicReference

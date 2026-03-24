@@ -1,0 +1,11 @@
+FormKey: 00080C:Acheron.esm
+EditorID: AcheronIgnoredFac
+Name:
+  TargetLanguage: English
+  Value: Y Kudasai Ignored
+Flags:
+- HiddenFromPC
+CrimeValues:
+  Arrest: True
+  AttackOnSight: True
+VendorValues: {}

@@ -1,0 +1,48 @@
+FormKey: 000800:Acheron.esm
+EditorID: AcheronMain
+VirtualMachineAdapter:
+  Scripts:
+  - Name: AcheronHunterPride
+    Properties:
+    - MutagenObjectType: ScriptObjectProperty
+      Name: HealTargetFX
+      Object: 00080B:Acheron.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: IsEssentialMsg
+      Object: 00080A:Acheron.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: NoPotionMsg
+      Object: 000808:Acheron.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: PlayerRef
+      Object: 000014:Skyrim.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: PlayerVampireQuest
+      Object: 0EAFD5:Skyrim.esm
+  - Name: AcheronMCM
+    Properties:
+    - MutagenObjectType: ScriptStringProperty
+      Name: ModName
+      Data: ' Acheron'
+  FileName: ''
+  Aliases:
+  - Property:
+      Name: ''
+      Object: 000800:Acheron.esm
+      Alias: 1
+    Scripts:
+    - Name: SKI_PlayerLoadGameAlias
+Flags:
+- StartGameEnabled
+- 0x10
+- RunOnce
+Priority: 30
+Stages:
+- {}
+NextAliasID: 2
+Aliases:
+- ID: 1
+  Name: Player
+  Flags: []
+  UniqueActor: 000007:Skyrim.esm
+  VoiceTypes: Null

@@ -1,0 +1,17 @@
+FormKey: 000807:Acheron.esm
+EditorID: AcheronAbHunterPride
+Name:
+  TargetLanguage: English
+  Value: Hunter's Pride
+MenuDisplayObject: 10FEF4:Skyrim.esm
+EquipmentType: 013F44:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: ''
+Flags:
+- IgnoreResistance
+- NoAbsorbOrReflect
+Type: Ability
+Effects:
+- BaseEffect: 000806:Acheron.esm
+  Data: {}

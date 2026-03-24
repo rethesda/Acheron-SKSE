@@ -1,0 +1,171 @@
+FormKey: 000805:Acheron.esm
+EditorID: AcheronDefaultCommon
+VirtualMachineAdapter:
+  Scripts:
+  - Name: QF_AcheronDefaultCommon_0500592D
+    Properties:
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_currentLoc
+      Object: 000805:Acheron.esm
+      Alias: 2
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_EdgeMarker
+      Object: 000805:Acheron.esm
+      Alias: 7
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_FallbackMarkerAny
+      Object: 000805:Acheron.esm
+      Alias: 11
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_FallbackMarkerLoaded
+      Object: 000805:Acheron.esm
+      Alias: 9
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_OutsideMarker
+      Object: 000805:Acheron.esm
+      Alias: 8
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_Player
+      Object: 000805:Acheron.esm
+      Alias: 0
+    - MutagenObjectType: ScriptObjectProperty
+      Name: FadeToBlackImod
+      Object: 0F756D:Skyrim.esm
+  FileName: QF_AcheronDefaultCommon_0500592D
+  Fragments:
+  - Unknown2: 1
+    ScriptName: QF_AcheronDefaultCommon_0500592D
+    FragmentName: Fragment_0
+  - Stage: 25
+    Unknown2: 1
+    ScriptName: QF_AcheronDefaultCommon_0500592D
+    FragmentName: Fragment_1
+Stages:
+- Flags:
+  - StartUpStage
+  LogEntries:
+  - Flags: []
+- Index: 25
+  LogEntries:
+  - Flags: []
+NextAliasID: 12
+Aliases:
+- Name: Player
+  Flags:
+  - AllowReserved
+  UniqueActor: 000007:Skyrim.esm
+  VoiceTypes: Null
+- ID: 2
+  Type: Location
+  Name: CurrentLoc
+  Flags:
+  - Optional
+  - AllowReserved
+  - AllowCleared
+  Location:
+    AliasID: 0
+- ID: 7
+  Name: EdgeMarker
+  Flags:
+  - Optional
+  - AllowDisabled
+  - AllowReserved
+  Location:
+    AliasID: 2
+    RefType: 0216B4:Skyrim.esm
+  VoiceTypes: Null
+- ID: 8
+  Name: OutsideMarker
+  Flags:
+  - Optional
+  - AllowDisabled
+  - AllowReserved
+  Location:
+    AliasID: 2
+    RefType: 0130FB:Skyrim.esm
+  Conditions:
+  - MutagenObjectType: ConditionFloat
+    Data:
+      MutagenObjectType: IsInInteriorConditionData
+      RunOnType: Reference
+      Reference: 000014:Skyrim.esm
+    ComparisonValue: 1
+  VoiceTypes: Null
+- ID: 9
+  Name: FallbackMarkerLoaded
+  Flags:
+  - Optional
+  - MatchingRefInLoadedArea
+  - AllowDisabled
+  - AllowReserved
+  - MatchingRefClosest
+  Conditions:
+  - MutagenObjectType: ConditionFloat
+    CompareOperator: GreaterThan
+    Data:
+      MutagenObjectType: GetDistanceConditionData
+      UseAliases: True
+    ComparisonValue: 512
+  - MutagenObjectType: ConditionFloat
+    Flags:
+    - OR
+    Data:
+      MutagenObjectType: HasRefTypeConditionData
+      LocationReferenceType: 0216B4:Skyrim.esm
+    ComparisonValue: 1
+  - MutagenObjectType: ConditionFloat
+    Flags:
+    - OR
+    Data:
+      MutagenObjectType: HasRefTypeConditionData
+      LocationReferenceType: 01BDF1:Skyrim.esm
+    ComparisonValue: 1
+  - MutagenObjectType: ConditionFloat
+    Flags:
+    - OR
+    Data:
+      MutagenObjectType: HasRefTypeConditionData
+      LocationReferenceType: 0130FB:Skyrim.esm
+    ComparisonValue: 1
+  VoiceTypes: Null
+- ID: 11
+  Name: FallbackMarkerAny
+  Flags:
+  - Optional
+  - AllowDisabled
+  - AllowReserved
+  Conditions:
+  - MutagenObjectType: ConditionFloat
+    CompareOperator: LessThan
+    Data:
+      MutagenObjectType: GetDistanceConditionData
+      UseAliases: True
+    ComparisonValue: 32768
+  - MutagenObjectType: ConditionFloat
+    CompareOperator: GreaterThan
+    Data:
+      MutagenObjectType: GetDistanceConditionData
+      UseAliases: True
+    ComparisonValue: 2046
+  - MutagenObjectType: ConditionFloat
+    Flags:
+    - OR
+    Data:
+      MutagenObjectType: HasRefTypeConditionData
+      LocationReferenceType: 0216B4:Skyrim.esm
+    ComparisonValue: 1
+  - MutagenObjectType: ConditionFloat
+    Flags:
+    - OR
+    Data:
+      MutagenObjectType: HasRefTypeConditionData
+      LocationReferenceType: 01BDF1:Skyrim.esm
+    ComparisonValue: 1
+  - MutagenObjectType: ConditionFloat
+    Flags:
+    - OR
+    Data:
+      MutagenObjectType: HasRefTypeConditionData
+      LocationReferenceType: 0130FB:Skyrim.esm
+    ComparisonValue: 1
+  VoiceTypes: Null

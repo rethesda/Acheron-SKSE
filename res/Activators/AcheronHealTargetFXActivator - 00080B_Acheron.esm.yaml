@@ -1,0 +1,14 @@
+FormKey: 00080B:Acheron.esm
+EditorID: AcheronHealTargetFXActivator
+VirtualMachineAdapter:
+  Scripts:
+  - Name: SummonTargetFXActivatorScript
+ObjectBounds:
+  First: -81, -29, -99
+  Second: 79, 69, 118
+Model:
+  File: Magic\HealTargetFX.nif
+  Data: 0x020000000000000000000000
+MarkerColor: '#00CC4C33'
+ActivationSound: 04E792:Skyrim.esm
+Flags: []

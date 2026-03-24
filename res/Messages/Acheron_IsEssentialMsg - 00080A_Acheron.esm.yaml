@@ -1,0 +1,15 @@
+FormKey: 00080A:Acheron.esm
+EditorID: Acheron_IsEssentialMsg
+Description:
+  TargetLanguage: English
+  Value: This target is essential. Are you sure you want to execute it?
+INAM: 0x00000000
+Flags:
+- MessageBox
+MenuButtons:
+- Text:
+    TargetLanguage: English
+    Value: Let me rethink
+- Text:
+    TargetLanguage: English
+    Value: Yes

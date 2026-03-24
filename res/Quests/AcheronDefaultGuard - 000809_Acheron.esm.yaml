@@ -1,0 +1,70 @@
+FormKey: 000809:Acheron.esm
+EditorID: AcheronDefaultGuard
+VirtualMachineAdapter:
+  Scripts:
+  - Name: QF_AcheronDefaultGuard_0500592E
+    Properties:
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_Guard
+      Object: 000809:Acheron.esm
+      Alias: 1
+    - MutagenObjectType: ScriptObjectProperty
+      Name: Alias_Player
+      Object: 000809:Acheron.esm
+      Alias: 0
+    - MutagenObjectType: ScriptObjectProperty
+      Name: CrimeFactionEastmarch
+      Object: 0267E3:Skyrim.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: CrimeFactionHaafingar
+      Object: 029DB0:Skyrim.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: CrimeFactionImperial
+      Object: 028848:Skyrim.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: CrimeFactionSons
+      Object: 028849:Skyrim.esm
+    - MutagenObjectType: ScriptObjectProperty
+      Name: FadeToBlackImod
+      Object: 0F756D:Skyrim.esm
+  FileName: QF_AcheronDefaultGuard_0500592E
+  Fragments:
+  - Unknown2: 1
+    ScriptName: QF_AcheronDefaultGuard_0500592E
+    FragmentName: Fragment_0
+  - Stage: 25
+    Unknown2: 1
+    ScriptName: QF_AcheronDefaultGuard_0500592E
+    FragmentName: Fragment_1
+Stages:
+- Flags:
+  - StartUpStage
+  LogEntries:
+  - Flags: []
+- Index: 25
+  LogEntries:
+  - Flags: []
+NextAliasID: 2
+Aliases:
+- Name: Player
+  Flags:
+  - AllowReserved
+  UniqueActor: 000007:Skyrim.esm
+  VoiceTypes: Null
+- ID: 1
+  Name: Guard
+  Flags:
+  - MatchingRefInLoadedArea
+  - AllowReserved
+  - MatchingRefClosest
+  Conditions:
+  - MutagenObjectType: ConditionFloat
+    Data:
+      MutagenObjectType: IsGuardConditionData
+    ComparisonValue: 1
+  - MutagenObjectType: ConditionFloat
+    Data:
+      MutagenObjectType: GetInFactionConditionData
+      Faction: 02BE3B:Skyrim.esm
+    ComparisonValue: 1
+  VoiceTypes: Null

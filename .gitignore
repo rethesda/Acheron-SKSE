@@ -1,8 +1,11 @@
 .vs/
-.vscode/
+.vscode/*
+!.vscode/c_cpp_properties.json
+
+.release/
 .xmake/
 build/
-.release/
+
 dist/SKSE/Plugins/
 *.pex
 *.swf

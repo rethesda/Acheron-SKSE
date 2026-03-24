@@ -50,10 +50,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
+            .github/Papyrus/Base
             .github/Papyrus/SRC
             .github/Papyrus/SRC_SKYUI
             .github/Papyrus/SRC/TESV_Papyrus_Flags.flg
-          key: script-sources-clean
+          key: script-sources-clean-v2
 
       - name: Cache Compiler
         id: cache-com

@@ -247,7 +247,6 @@ target("papyrus")
     add_files("dist/Source/Scripts/*.psc")
     add_includedirs("dist/Source/Scripts")
     add_includedirs("$(papyrus_include)/SkyUI SDK/Source/Scripts")
-    add_includedirs("$(papyrus_include)/ConsoleUtil Extended/Source/Scripts")
     add_includedirs("$(papyrus_gamesource)/Source/Scripts")
 
     on_load(function(target)

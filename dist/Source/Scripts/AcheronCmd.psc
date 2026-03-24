@@ -38,7 +38,7 @@ EndFunction
 
 bool Function RunGetDefeated() global
   Actor[] act = Acheron.GetDefeated()
-  ConsoleUtil.PrintConsole(ActorVecAsString(act))
+  Acheron.PrintConsole(ActorVecAsString(act))
   return 1
 EndFunction
 
@@ -70,6 +70,6 @@ EndFunction
 
 bool Function RunGetPacified() global
   Actor[] act = Acheron.GetPacified()
-  ConsoleUtil.PrintConsole(ActorVecAsString(act))
+  Acheron.PrintConsole(ActorVecAsString(act))
   return 1
 EndFunction

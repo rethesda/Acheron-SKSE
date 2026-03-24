@@ -59,15 +59,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .github/Caprica
-          key: ${{ runner.os }}-papyrus-compiler
+          key: ${{ runner.os }}-papyrus-compiler-0.3.0a
 
       - name: Fetch Caprica
         if: steps.cache-com.outputs.cache-hit != 'true'
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download -O .github/Caprica.7z -p '*.7z' -R KrisV-777/Caprica v0.3.0a
-          7z x .github/Caprica.7z "-o.github\Caprica"
+          New-Item -ItemType Directory -Path .github -Force | Out-Null
+          gh release download 0.3.0a -R KrisV-777/Caprica --pattern "Caprica.zip" --dir .github --clobber
+          7z x .github/Caprica.zip "-o.github\Caprica" -y
+
+          if (-not (Test-Path ".github/Caprica/Caprica.exe")) {
+            Write-Error "Caprica.exe not found after extraction."
+            exit 1
+          }
 
       - name: Checkout Papyrus Sources
         if: steps.cache-ss.outputs.cache-hit != 'true'
@@ -142,14 +148,14 @@ jobs:
             exit 1
           }
 
-      - name: Deserialize ESP
+      - name: Deserialize ESM
         shell: pwsh
         run: .github\spriggit\Spriggit.CLI.exe deserialize --InputPath "res" --OutputPath "dist/Acheron.esm"
 
       - name: Upload Plugin Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: plugin
+          name: built-esm
           path: dist/Acheron.esm
 
   compile-dll-1:
@@ -162,16 +168,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Setup xmake
         uses: xmake-io/github-action-setup-xmake@v1
-        with:
-          xmake-version: branch@master
 
-      - name: Build DLL for version=1
+      - name: Configure
         shell: pwsh
-        run: |
-          xmake f -c -m release --version=1 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
-          xmake build Acheron
+        run: xmake f -c -y -m release --version=1 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+
+      - name: Build
+        shell: pwsh
+        run: xmake -b -y Acheron
 
       - name: Stage DLL files (1.5.97)
         shell: pwsh
@@ -198,16 +207,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Setup xmake
         uses: xmake-io/github-action-setup-xmake@v1
-        with:
-          xmake-version: branch@master
 
-      - name: Build DLL for version=2
+      - name: Configure
         shell: pwsh
-        run: |
-          xmake f -c -m release --version=2 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
-          xmake build Acheron
+        run: xmake f -c -y -m release --version=2 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+
+      - name: Build
+        shell: pwsh
+        run: xmake -b -y Acheron
 
       - name: Stage DLL files (1.6.1170)
         shell: pwsh

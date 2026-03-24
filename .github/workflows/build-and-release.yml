@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 concurrency:
   group: ci-release-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -309,11 +312,20 @@ jobs:
             New-Item -ItemType Directory -Path $packRoot -Force | Out-Null
 
             New-Item -ItemType Directory -Path (Join-Path $packRoot 'Scripts') -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $packRoot 'Source/Scripts') -Force | Out-Null
             New-Item -ItemType Directory -Path (Join-Path $packRoot 'SKSE/Plugins') -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $packRoot 'SKSE/CustomConsole') -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $packRoot 'SKSE/Acheron') -Force | Out-Null
 
             Copy-Item -Path artifacts/compiled-papyrus/* -Destination (Join-Path $packRoot 'Scripts') -Recurse -Force
             Copy-Item -Path artifacts/built-esm/Acheron.esm -Destination (Join-Path $packRoot 'Acheron.esm') -Force
             Copy-Item -Path "$($target.DllRoot)/SKSE/Plugins/*" -Destination (Join-Path $packRoot 'SKSE/Plugins') -Recurse -Force
+            
+            # Static dist assets (committed to repo)
+            Copy-Item -Path dist/Interface -Destination (Join-Path $packRoot 'Interface') -Recurse -Force
+            Copy-Item -Path dist/Source/Scripts/* -Destination (Join-Path $packRoot 'Source/Scripts') -Recurse -Force
+            Copy-Item -Path dist/SKSE/Acheron/* -Destination (Join-Path $packRoot 'SKSE/Acheron') -Recurse -Force
+            Copy-Item -Path dist/SKSE/CustomConsole/* -Destination (Join-Path $packRoot 'SKSE/CustomConsole') -Recurse -Force
 
             $archivePath = Join-Path $env:GITHUB_WORKSPACE ("release/$name.zip")
             if (Test-Path $archivePath) {

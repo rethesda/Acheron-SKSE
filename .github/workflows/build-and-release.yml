@@ -1,0 +1,361 @@
+name: Build and Release
+
+"on":
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+env:
+  CAPRICA_VERSION: v0.3.0
+  CAPRICA_REPO: KrisV-777/Caprica
+
+jobs:
+  project-version:
+    name: Resolve Project Version
+    runs-on: windows-latest
+    outputs:
+      project_version: ${{ steps.version.outputs.project_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from xmake.lua
+        id: version
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $content = Get-Content -Path xmake.lua -Raw
+          $match = [regex]::Match($content, 'PROJECT_VERSION\s*=\s*"([^"]+)"')
+          if (-not $match.Success) {
+            throw 'Could not determine PROJECT_VERSION from xmake.lua'
+          }
+
+          $projectVersion = $match.Groups[1].Value
+          "project_version=$projectVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+  compile-papyrus:
+    name: Compile Papyrus (.psc -> .pex)
+    needs: project-version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: branch@master
+
+      - name: Cache Caprica
+        id: cache-caprica
+        uses: actions/cache@v4
+        with:
+          path: .github/Caprica
+          key: ${{ runner.os }}-caprica-${{ env.CAPRICA_VERSION }}
+
+      - name: Fetch Caprica
+        if: steps.cache-caprica.outputs.cache-hit != 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Path .github -Force | Out-Null
+
+          gh release download $env:CAPRICA_VERSION -R $env:CAPRICA_REPO --pattern "*.7z" --dir .github --clobber
+
+          $capricaArchive = Get-ChildItem -Path .github -Filter *.7z | Select-Object -First 1
+          if (-not $capricaArchive) {
+            throw 'Caprica archive (*.7z) not found after download.'
+          }
+
+          7z x $capricaArchive.FullName -o".github/Caprica/" -y
+
+          if (-not (Test-Path ".github/Caprica/Caprica.exe")) {
+            throw 'Caprica.exe not found after extraction.'
+          }
+
+      - name: Configure Papyrus paths
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path ".github/Caprica/PapyrusCompiler.exe")) {
+            Copy-Item -Path .github/Caprica/Caprica.exe -Destination .github/Caprica/PapyrusCompiler.exe -Force
+          }
+
+          "PAPYRUS_PATH=$((Resolve-Path '.github/Caprica').Path)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PAPYRUS_INCLUDE=$((Join-Path $env:GITHUB_WORKSPACE 'dist'))" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PAPYRUS_GAMESOURCE=$((Join-Path $env:GITHUB_WORKSPACE 'dist'))" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build Papyrus target
+        shell: pwsh
+        run: |
+          xmake f -c -m release --version=2 --build_dll=n --build_assets=n --build_papyrus=y --build_spriggit=n
+          xmake build papyrus
+
+      - name: Upload compiled Papyrus artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-papyrus
+          path: dist/Scripts
+
+  compile-esm:
+    name: Build Plugin (.esm via Spriggit)
+    needs: project-version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: branch@master
+
+      - name: Cache Spriggit
+        id: cache-spriggit
+        uses: actions/cache@v4
+        with:
+          path: .github/spriggit
+          key: ${{ runner.os }}-spriggit-SpriggitCLI
+
+      - name: Fetch Spriggit
+        if: steps.cache-spriggit.outputs.cache-hit != 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Path .github -Force | Out-Null
+          gh release download -R Mutagen-Modding/Spriggit --pattern "SpriggitCLI.zip" --dir .github --clobber
+          7z x .github/SpriggitCLI.zip -o".github/spriggit/" -y
+
+          if (-not (Test-Path ".github/spriggit/Spriggit.CLI.exe")) {
+            throw 'Spriggit.CLI.exe not found after extraction.'
+          }
+
+      - name: Configure Spriggit path
+        shell: pwsh
+        run: |
+          "SPRIGGIT_PATH=$((Resolve-Path '.github/spriggit').Path)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build plugin target
+        shell: pwsh
+        run: |
+          xmake f -c -m release --version=2 --build_dll=n --build_assets=n --build_papyrus=n --build_spriggit=y
+          xmake build Acheron.esm
+
+      - name: Upload ESM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-esm
+          path: dist/Acheron.esm
+
+  compile-dll-1:
+    name: Build DLL (1.5.97)
+    needs: project-version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: branch@master
+
+      - name: Build DLL for version=1
+        shell: pwsh
+        run: |
+          xmake f -c -m release --version=1 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+          xmake build Acheron
+
+      - name: Stage DLL files (1.5.97)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path out/1.5.97/SKSE/Plugins -Force | Out-Null
+          Copy-Item -Path dist/SKSE/Plugins/Acheron.dll -Destination out/1.5.97/SKSE/Plugins/Acheron.dll -Force
+          if (Test-Path dist/SKSE/Plugins/Acheron.pdb) {
+            Copy-Item -Path dist/SKSE/Plugins/Acheron.pdb -Destination out/1.5.97/SKSE/Plugins/Acheron.pdb -Force
+          }
+
+      - name: Upload DLL artifact (1.5.97)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dll-1-5-97
+          path: out/1.5.97
+
+  compile-dll-2:
+    name: Build DLL (1.6.1170)
+    needs: project-version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: branch@master
+
+      - name: Build DLL for version=2
+        shell: pwsh
+        run: |
+          xmake f -c -m release --version=2 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+          xmake build Acheron
+
+      - name: Stage DLL files (1.6.1170)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path out/1.6.1170/SKSE/Plugins -Force | Out-Null
+          Copy-Item -Path dist/SKSE/Plugins/Acheron.dll -Destination out/1.6.1170/SKSE/Plugins/Acheron.dll -Force
+          if (Test-Path dist/SKSE/Plugins/Acheron.pdb) {
+            Copy-Item -Path dist/SKSE/Plugins/Acheron.pdb -Destination out/1.6.1170/SKSE/Plugins/Acheron.pdb -Force
+          }
+
+      - name: Upload DLL artifact (1.6.1170)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dll-1-6-1170
+          path: out/1.6.1170
+
+  release:
+    name: Create Release (if version is newer)
+    needs:
+      - project-version
+      - compile-papyrus
+      - compile-esm
+      - compile-dll-1
+      - compile-dll-2
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download compiled Papyrus
+        uses: actions/download-artifact@v4
+        with:
+          name: compiled-papyrus
+          path: artifacts/compiled-papyrus
+
+      - name: Download ESM
+        uses: actions/download-artifact@v4
+        with:
+          name: built-esm
+          path: artifacts/built-esm
+
+      - name: Download DLL 1.5.97
+        uses: actions/download-artifact@v4
+        with:
+          name: dll-1-5-97
+          path: artifacts/dll-1-5-97
+
+      - name: Download DLL 1.6.1170
+        uses: actions/download-artifact@v4
+        with:
+          name: dll-1-6-1170
+          path: artifacts/dll-1-6-1170
+
+      - name: Build release archives
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $projectVersion = '${{ needs.project-version.outputs.project_version }}'
+          New-Item -ItemType Directory -Path release -Force | Out-Null
+
+          $targets = @(
+            @{ GameVersion = '1.5.97'; DllRoot = 'artifacts/dll-1-5-97' },
+            @{ GameVersion = '1.6.1170'; DllRoot = 'artifacts/dll-1-6-1170' }
+          )
+
+          foreach ($target in $targets) {
+            $name = "Acheron - $projectVersion - $($target.GameVersion)"
+            $packRoot = Join-Path $env:RUNNER_TEMP ("pack-" + $target.GameVersion.Replace('.', '-'))
+            if (Test-Path $packRoot) {
+              Remove-Item -Path $packRoot -Recurse -Force
+            }
+            New-Item -ItemType Directory -Path $packRoot -Force | Out-Null
+
+            New-Item -ItemType Directory -Path (Join-Path $packRoot 'Scripts') -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $packRoot 'SKSE/Plugins') -Force | Out-Null
+
+            Copy-Item -Path artifacts/compiled-papyrus/* -Destination (Join-Path $packRoot 'Scripts') -Recurse -Force
+            Copy-Item -Path artifacts/built-esm/Acheron.esm -Destination (Join-Path $packRoot 'Acheron.esm') -Force
+            Copy-Item -Path "$($target.DllRoot)/SKSE/Plugins/*" -Destination (Join-Path $packRoot 'SKSE/Plugins') -Recurse -Force
+
+            $archivePath = Join-Path $env:GITHUB_WORKSPACE ("release/$name.zip")
+            if (Test-Path $archivePath) {
+              Remove-Item -Path $archivePath -Force
+            }
+            Compress-Archive -Path "$packRoot/*" -DestinationPath $archivePath -Force
+          }
+
+      - name: Check latest release tag and compare versions
+        id: release_state
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $currentVersionText = '${{ needs.project-version.outputs.project_version }}'
+          $currentVersion = [version]$currentVersionText
+
+          $headers = @{
+            Authorization = "Bearer $env:GITHUB_TOKEN"
+            Accept = 'application/vnd.github+json'
+            'X-GitHub-Api-Version' = '2022-11-28'
+          }
+
+          $latestTag = ''
+          $latestVersionText = ''
+          $shouldRelease = $true
+
+          try {
+            $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/releases/latest" -Headers $headers
+            $latestTag = [string]$latest.tag_name
+            $latestVersionText = $latestTag.TrimStart('v', 'V')
+
+            if (-not [string]::IsNullOrWhiteSpace($latestVersionText)) {
+              $latestVersion = [version]$latestVersionText
+              $shouldRelease = $currentVersion -gt $latestVersion
+            }
+          } catch {
+            if (-not $_.Exception.Message.Contains('404')) {
+              throw
+            }
+          }
+
+          "current_version=$currentVersionText" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "latest_release_tag=$latestTag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "release_tag=v$currentVersionText" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "should_release=$($shouldRelease.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: release/*.zip
+
+      - name: Create GitHub release
+        if: steps.release_state.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_state.outputs.release_tag }}
+          name: Acheron ${{ steps.release_state.outputs.current_version }}
+          generate_release_notes: true
+          files: |
+            release/Acheron - ${{ needs.project-version.outputs.project_version }} - 1.5.97.zip
+            release/Acheron - ${{ needs.project-version.outputs.project_version }} - 1.6.1170.zip

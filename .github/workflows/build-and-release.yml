@@ -373,6 +373,14 @@ jobs:
             Compress-Archive -Path "$packRoot/*" -DestinationPath $archivePath -Force
           }
 
+      - name: Inject built files into FOMOD staging
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Path 'fomod-staging/Required/Scripts' -Force | Out-Null
+          Copy-Item -Path 'artifacts/compiled-papyrus/*' -Destination 'fomod-staging/Required/Scripts' -Recurse -Force
+          Copy-Item -Path 'artifacts/built-esm/Acheron.esm' -Destination 'fomod-staging/Required/Acheron.esm' -Force
+
       - name: Package FOMOD archive
         shell: pwsh
         run: |

@@ -18,6 +18,12 @@ static_assert(magic_enum::is_magic_enum_supported);
 #include <spdlog/sinks/msvc_sink.h>
 #pragma warning(pop)
 
+#ifdef SKYRIM_SUPPORT_VR
+#undef max
+#undef min
+#undef GetObject
+#endif
+
 namespace logger = SKSE::log;
 namespace fs = std::filesystem;
 using namespace std::literals;
@@ -36,7 +42,7 @@ static constexpr auto CONFIGPATH = [](std::string file) -> std::string { return 
 #ifdef SKYRIM_SUPPORT_AE
 #define RELID(SE, AE) REL::ID(AE)
 #define OFFSET(SE, AE) AE
-#else
+#else  // SE & VR
 #define RELID(SE, AE) REL::ID(SE)
 #define OFFSET(SE, AE) SE
 #endif

@@ -65,15 +65,21 @@ namespace Acheron
             }
         }
 
+        #ifdef SKYRIM_SUPPORT_VR
+            a_victim->GetActorRuntimeData().boolFlags.set(RE::Actor::BOOL_FLAGS::kNoBleedoutRecovery);
+            const auto& process = a_victim->GetActorRuntimeData().currentProcess;
+        #else
         a_victim->boolFlags.set(RE::Actor::BOOL_FLAGS::kNoBleedoutRecovery);
+        const auto& process = a_victim->currentProcess;
+        #endif
+
         if (a_victim->Is3DLoaded()) {
-            if (auto process = a_victim->currentProcess) {
+            if (process) {
                 process->PlayIdle(a_victim, GameForms::BleedoutStart, nullptr);
             } else {
                 a_victim->NotifyAnimationGraph("BleedoutStart");
             }
         }
-        const auto& process = a_victim->currentProcess;
         const auto middlehigh = process ? process->middleHigh : nullptr;
         if (middlehigh) {
             for (auto& commandedActorData : middlehigh->commandedActors) {
@@ -133,9 +139,17 @@ namespace Acheron
             }
         }
 
+
+#ifdef SKYRIM_SUPPORT_VR
+        a_victim->GetActorRuntimeData().boolFlags.reset(RE::Actor::BOOL_FLAGS::kNoBleedoutRecovery);
+        const auto& process = a_victim->GetActorRuntimeData().currentProcess;
+#else
         a_victim->boolFlags.reset(RE::Actor::BOOL_FLAGS::kNoBleedoutRecovery);
+        const auto& process = a_victim->currentProcess;
+#endif
+
         if (a_victim->Is3DLoaded() && !a_victim->IsDead()) {
-            if (auto process = a_victim->currentProcess) {
+            if (process) {
                 process->PlayIdle(a_victim, GameForms::BleedoutStop, a_victim);
             } else {
                 a_victim->NotifyAnimationGraph("BleedoutStop");

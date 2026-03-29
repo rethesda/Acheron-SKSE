@@ -55,7 +55,7 @@ namespace Acheron
             }
             const auto item = data.second.get()->GetObject()->As<RE::TESObjectARMO>();
             if (a_ignoredmasks) {
-                const auto slots = static_cast<uint32_t>(item->GetSlotMask());
+                const auto slots = item->GetSlotMask().underlying();
                 // sort out items which have no enabled slots (dont throw out if at least 1 slot matches)
                 if ((slots & a_ignoredmasks) == 0)
                     continue;

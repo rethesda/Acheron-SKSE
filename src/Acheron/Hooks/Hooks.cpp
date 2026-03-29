@@ -85,9 +85,15 @@ namespace Acheron
     {
         _PlUpdate(a_player, a_delta);
 
-        static bool __combat = a_player->playerFlags.isInCombat;
-        if (__combat != a_player->playerFlags.isInCombat) {
-            __combat = a_player->playerFlags.isInCombat;
+#ifdef SKYRIM_SUPPORT_VR
+        const auto plFlags = a_player->GetPlayerRuntimeData().playerFlags;
+#else
+        const auto plFlags = a_player->playerFlags;
+#endif
+
+        static bool __combat = plFlags.isInCombat;
+        if (__combat != plFlags.isInCombat) {
+            __combat = plFlags.isInCombat;
             if (!__combat && Settings::iFollowerRescue == 1 && !Defeat::IsDamageImmune(a_player)) {
                 const auto defeated = Defeat::GetAllDefeated(false);
                 for (auto&& actor : defeated) {
@@ -132,12 +138,23 @@ namespace Acheron
         if (const auto data = Defeat::GetVictimData(a_this.GetFormID())) {
             if (data->mark_for_recovery && data->allow_recovery && Settings::bNPCRescueReload) {
                 // isLoading is true when loading from a prev location / is false when loading save
-                if (RE::PlayerCharacter::GetSingleton()->playerFlags.isLoading) {
+                const auto player = RE::PlayerCharacter::GetSingleton();
+#ifdef SKYRIM_SUPPORT_VR
+                const auto plFlags = player->GetPlayerRuntimeData().playerFlags;
+#else
+                const auto plFlags = player->playerFlags;
+#endif
+                if (plFlags.isLoading) {
                     Defeat::RescueActor(&a_this, true);
                     return ret;
                 }
             }
-            if (auto process = a_this.currentProcess) {
+#ifdef SKYRIM_SUPPORT_VR
+            const auto process = a_this.GetActorRuntimeData().currentProcess;
+#else
+            const auto process = a_this.currentProcess;
+#endif
+            if (process) {
                 process->PlayIdle(&a_this, GameForms::BleedoutStart, &a_this);
             } else {
                 a_this.NotifyAnimationGraph("BleedoutStart");
@@ -420,7 +437,12 @@ namespace Acheron
         if (a_victim->IsPlayerTeammate())
             return Random::draw<float>(0, 99.5f) < Settings::fLethalFollower;
 
-        if (Settings::bLethalEssential && (a_victim->boolFlags.all(Flag::kEssential) || !(a_aggressor && a_aggressor->IsPlayerRef()) && a_victim->boolFlags.all(Flag::kProtected)))
+#ifdef SKYRIM_SUPPORT_VR
+        const auto& flags = a_victim->GetActorRuntimeData().boolFlags;
+#else
+        const auto& flags = a_victim->boolFlags;
+#endif
+        if (Settings::bLethalEssential && (flags.all(Flag::kEssential) || !(a_aggressor && a_aggressor->IsPlayerRef()) && flags.all(Flag::kProtected)))
             return true;
 
         return Random::draw<float>(0, 99.5f) < Settings::fLethalNPC;
@@ -435,7 +457,7 @@ namespace Acheron
                 auto kwd = e->As<RE::BGSKeywordForm>();
                 if (kwd && kwd->ContainsKeywordString("NoStrip"))
                     continue;
-                occupied += static_cast<decltype(occupied)>(e->GetSlotMask());
+                occupied += e->GetSlotMask().underlying();
             }
             constexpr auto ign{ (1U << 1) + (1U << 5) + (1U << 6) + (1U << 9) + (1U << 11) + (1U << 12) + (1U << 13) + (1U << 15) + (1U << 20) + (1U << 21) + (1U << 31) };
             auto t = std::popcount(occupied & (~ign));
@@ -493,11 +515,20 @@ namespace Acheron
     void Hooks::AdjustByDifficultyMult(float& damage, const bool playerPOV, const bool onlyReduce)
     {
         const auto s = RE::GetINISetting("iDifficulty:GamePlay");
+#ifdef SKYRIM_SUPPORT_VR
+        if (s->GetType() != RE::Setting::Type::kInteger)
+            return;
+#else
         if (s->GetType() != RE::Setting::Type::kSignedInteger)
             return;
+#endif
 
         std::string diff{ "fDiffMultHP"s + (playerPOV ? "ToPC"s : "ByPC"s) };
+#ifdef SKYRIM_SUPPORT_VR
+        switch (s->GetInteger()) {
+#else
         switch (s->GetSInt()) {
+#endif
         case 0:
             diff.append("VE");
             break;

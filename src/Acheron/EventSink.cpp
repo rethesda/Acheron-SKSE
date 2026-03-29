@@ -14,7 +14,11 @@ namespace Acheron
         auto source = const_cast<RE::Actor*>(a_event->holder->As<RE::Actor>());
         // constexpr std::array events{ "MTState", "IdleStop", "JumpLandEnd" };
         if (a_event->tag == "MTState") {
+#ifdef SKYRIM_SUPPORT_VR
+            if (auto process = source->GetActorRuntimeData().currentProcess) {
+#else
             if (auto process = source->currentProcess) {
+#endif
                 process->PlayIdle(source, GameForms::BleedoutStart, source);
             } else {
                 source->NotifyAnimationGraph("BleedoutStart");
@@ -28,7 +32,12 @@ namespace Acheron
         if (!a_event || !a_event->actor || !a_event->actor->IsPlayerRef())
             return EventResult::kContinue;
         // Dont process playing loading game
-        if (!RE::PlayerCharacter::GetSingleton()->playerFlags.isLoading)
+        const auto player = RE::PlayerCharacter::GetSingleton();
+#ifdef SKYRIM_SUPPORT_VR
+        if (!player->GetPlayerRuntimeData().playerFlags.isLoading)
+#else
+        if (!player->playerFlags.isLoading)
+#endif
             if (RE::UI::GetSingleton()->IsMenuOpen(RE::InterfaceStrings::GetSingleton()->loadingMenu))
                 return EventResult::kContinue;
         // Dont process loading child/parent locs
@@ -161,7 +170,12 @@ namespace Acheron
                     case RE::INPUT_DEVICE::kKeyboard:
                         device = dmanager->GetKeyboard();
                         break;
+#ifdef SKYRIM_SUPPORT_VR
+                    case RE::INPUT_DEVICE::kFlatVirtualKeyboard:
+                    case RE::INPUT_DEVICE::kVRVirtualKeyboard:
+#else
                     case RE::INPUT_DEVICE::kVirtualKeyboard:
+#endif
                         device = dmanager->GetVirtualKeyboard();
                         break;
                     default:

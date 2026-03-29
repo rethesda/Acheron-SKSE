@@ -103,9 +103,10 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
         return false;
     }
 
+#ifndef SKYRIM_SUPPORT_VR
     Acheron::Interface::HunterPride::Register();
     Acheron::Interface::CustomMenu::Register();
-    // Acheron::Hooks::Install();
+#endif
 
     const auto serialization = SKSE::GetSerializationInterface();
     serialization->SetUniqueID('achr');

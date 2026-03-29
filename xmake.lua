@@ -100,8 +100,11 @@ add_requires("yaml-cpp", "magic_enum", "nlohmann_json", "simpleini")
 
 local v = get_config("version")
 if v == "0" then
-    -- includes("lib/CommonLibVR/xmake.lua")
+    includes("lib/CommonLibVR/xmake.lua")
     add_defines("SKYRIM_SUPPORT_VR")
+    set_config("skyrim_se", false)
+    set_config("skyrim_ae", false)
+    set_config("skyrim_vr", true)
 elseif v == "1" then
     includes("lib/CommonLibSSE/xmake.lua")
     set_config("skyrim_ae", false)
@@ -165,9 +168,9 @@ target(PROJECT_NAME)
     -- Dependencies
     add_packages("yaml-cpp", "magic_enum", "nlohmann_json", "simpleini")
 
-    -- CommonLibSSE
-    add_deps("commonlibsse")
-    add_rules("commonlibsse.plugin", {
+    -- CommonLib dependency
+    add_deps(get_config("version") == "0" and "commonlibsse-ng" or "commonlibsse")
+    add_rules((get_config("version") == "0" and "commonlibsse-ng.plugin" or "commonlibsse.plugin"), {
         name = PROJECT_NAME,
         author = "KrisV777",
         description = "A death alternative framework for Skyrim SE."

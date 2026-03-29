@@ -173,6 +173,45 @@ jobs:
           name: built-esm
           path: dist/Acheron.esm
 
+  compile-dll-0:
+    name: Build DLL (VR)
+    needs: project-version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+
+      - name: Configure
+        shell: pwsh
+        run: xmake f -c -y -m release --version=0 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+
+      - name: Build
+        shell: pwsh
+        run: xmake -b -y Acheron
+
+      - name: Stage DLL files (VR)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Path out/vr -Force | Out-Null
+
+          Copy-Item -Path 'build/windows/x64/release/Acheron.dll' -Destination out/vr/Acheron.dll -Force
+          Copy-Item -Path 'build/windows/x64/release/Acheron.pdb' -Destination out/vr/Acheron.pdb -Force
+
+      - name: Upload DLL artifact (VR)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dll-vr
+          path: out/vr
+
   compile-dll-1:
     name: Build DLL (1.5.97)
     needs: project-version
@@ -257,6 +296,7 @@ jobs:
       - project-version
       - compile-papyrus
       - compile-esm
+      - compile-dll-0
       - compile-dll-1
       - compile-dll-2
     uses: adya/pack-skse-mod/.github/workflows/make-fomod.yml@main
@@ -271,6 +311,12 @@ jobs:
       REQUIRED_DST_PATH: ""
       DST_PATH: SKSE/Plugins
       INCLUDE_PDB: true
+      VR_NAME: Skyrim VR
+      VR_DESCR: Skyrim VR (1.4.15.0+)
+      VR_PATH: VR
+      VR_MIN_GAME_VERSION: 1.4.15.0
+      VR_VERSION: ${{ needs.project-version.outputs.project_version }}
+      VR_ARTIFACT: dll-vr
       SE_NAME: Skyrim SE (1.5.97)
       SE_DESCR: Skyrim Special Edition, 1.5.97
       SE_PATH: SE
@@ -292,6 +338,7 @@ jobs:
       - project-version
       - compile-papyrus
       - compile-esm
+      - compile-dll-0
       - compile-dll-1
       - compile-dll-2
       - make-fomod
@@ -311,6 +358,12 @@ jobs:
         with:
           name: built-esm
           path: artifacts/built-esm
+          
+      - name: Download DLL 1.4.15 (VR)
+        uses: actions/download-artifact@v4
+        with:
+          name: dll-vr
+          path: artifacts/dll-vr
 
       - name: Download DLL 1.5.97
         uses: actions/download-artifact@v4
@@ -338,6 +391,7 @@ jobs:
           New-Item -ItemType Directory -Path release -Force | Out-Null
 
           $targets = @(
+            @{ GameVersion = '1.4.15'; DllRoot = 'artifacts/dll-vr' },
             @{ GameVersion = '1.5.97'; DllRoot = 'artifacts/dll-1-5-97' },
             @{ GameVersion = '1.6.1170'; DllRoot = 'artifacts/dll-1-6-1170' }
           )

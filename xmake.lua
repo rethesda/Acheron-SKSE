@@ -18,7 +18,7 @@ includes("xmake/spriggit")
 add_moduledirs("xmake/modules")
 
 -- Options
-option("version")
+option("gamever")
     set_default("2")
     set_description("Game Version to build for: 0: VR, 1: V1.5.97, 2: V1.6.1170")
 option_end()
@@ -98,7 +98,7 @@ option_end()
 -- https://github.com/xmake-io/xmake-repo/tree/dev
 add_requires("yaml-cpp", "magic_enum", "nlohmann_json", "simpleini")
 
-local v = get_config("version")
+local v = get_config("gamever")
 if v == "0" then
     includes("lib/CommonLibVR/xmake.lua")
     add_defines("SKYRIM_SUPPORT_VR")
@@ -169,8 +169,8 @@ target(PROJECT_NAME)
     add_packages("yaml-cpp", "magic_enum", "nlohmann_json", "simpleini")
 
     -- CommonLib dependency
-    add_deps(get_config("version") == "0" and "commonlibsse-ng" or "commonlibsse")
-    add_rules((get_config("version") == "0" and "commonlibsse-ng.plugin" or "commonlibsse.plugin"), {
+        add_deps(get_config("gamever") == "0" and "commonlibsse-ng" or "commonlibsse")
+        add_rules((get_config("gamever") == "0" and "commonlibsse-ng.plugin" or "commonlibsse.plugin"), {
         name = PROJECT_NAME,
         author = "KrisV777",
         description = "A death alternative framework for Skyrim SE."
@@ -220,7 +220,7 @@ target(PROJECT_NAME)
             clib:set("build_after", nil)
         end
         
-        local v = get_config("version")
+        local v = get_config("gamever")
         if v == "0" then
             print("Building plugin for Skyrim VR")
         elseif v == "1" then

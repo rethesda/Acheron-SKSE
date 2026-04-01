@@ -191,7 +191,7 @@ jobs:
 
       - name: Configure
         shell: pwsh
-        run: xmake f -c -y -m release --version=0 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+        run: xmake f -c -y -m release --gamever=0 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
 
       - name: Build
         shell: pwsh
@@ -230,7 +230,7 @@ jobs:
 
       - name: Configure
         shell: pwsh
-        run: xmake f -c -y -m release --version=1 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+        run: xmake f -c -y -m release --gamever=1 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
 
       - name: Build
         shell: pwsh
@@ -269,7 +269,7 @@ jobs:
 
       - name: Configure
         shell: pwsh
-        run: xmake f -c -y -m release --version=2 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
+        run: xmake f -c -y -m release --gamever=2 --build_assets=n --build_papyrus=n --build_spriggit=n --build_dll=y
 
       - name: Build
         shell: pwsh

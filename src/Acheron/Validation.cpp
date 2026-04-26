@@ -27,7 +27,7 @@ namespace Acheron
                 } else if (item.IsMap() && item["FormID"]) {
                     formIdStr = item["FormID"].as<std::string>();
                     conditional = {
-                        a_node["Conditions"].as<std::vector<std::string>>(std::vector<std::string>{}),
+                        item["Conditions"].as<std::vector<std::string>>(std::vector<std::string>{}),
                         refs
                     };
                 } else {
@@ -52,11 +52,11 @@ namespace Acheron
             parseList(a_branch["Faction"], refs, exclFaction[a_validation]);
         };
         for (auto& file : fs::directory_iterator{ exclusionpath }) {
+            const auto filepath = file.path().string();
+            if (!filepath.ends_with(".yaml") && !filepath.ends_with(".yml"))
+                continue;
+            logger::info("Reading file {}", filepath);
             try {
-                const auto filepath = file.path().string();
-                if (!filepath.ends_with(".yaml") && !filepath.ends_with(".yml"))
-                    continue;
-                logger::info("Reading file {}", filepath);
                 const auto root{ YAML::LoadFile(filepath) };
                 const auto refs = root["refMap"].as<std::map<std::string, std::string>>(std::map<std::string, std::string>{});
                 const Conditions::RefMap refMap{ refs };
@@ -69,7 +69,7 @@ namespace Acheron
                 readBranch(root, refs, VTarget::Either);
                 logger::info("Added exclusion data from file {}", filepath);
             } catch (const std::exception& e) {
-                logger::error("{}", e.what());
+                logger::error("Failed to read exclusion data from file {}: {}", filepath, e.what());
             }
         }
         logger::info("Finished loading Exclusion Data");
@@ -80,7 +80,7 @@ namespace Acheron
         if (formID == 0 && conditional) {
             return conditional.ConditionsMet(a_conditionRef, a_conditionRef);
         }
-        bool formIdMatch = a_targetID != formID;
+        bool formIdMatch = a_targetID == formID;
         bool conditionMatch = (!conditional || conditional.ConditionsMet(a_conditionRef, a_conditionRef));
         return formIdMatch && conditionMatch;
     }
@@ -163,11 +163,13 @@ namespace Acheron
 
     bool Validation::CheckExclusion(VTarget a_validation, RE::Actor* a_actor)
     {
-        const auto isAllowed = [&](RE::FormID a_id, const auto a_list[3]) -> bool {
+        const auto isAllowed = [&](RE::FormID a_id, const auto& a_list) -> bool {
             const auto f = [&](const ExclusionData& data) {
                 return data.IsExcluded(a_id, a_actor);
             };
-            return std::ranges::none_of(a_list[VTarget::Either], f) && std::ranges::none_of(a_list[a_validation], f);
+            const auto eitherValid = std::ranges::none_of(a_list[VTarget::Either], f);
+            const auto specificValid = std::ranges::none_of(a_list[a_validation], f);
+            return eitherValid && specificValid;
         };
         if (!isAllowed(a_actor->GetFormID(), exclRef)) {
             return false;

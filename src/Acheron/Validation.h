@@ -58,13 +58,13 @@ namespace Acheron
       private:
         static bool CheckExclusion(VTarget a_validation, RE::Actor* a_actor);  // Check actor for exclusion in arrays
 
-        static inline std::vector<ExclusionData> exclLocAll{};                 // Always disabled locations
-        static inline std::vector<ExclusionData> exclLocTp{};                  // Teleport only disabled locations
-        static inline std::vector<ExclusionData> exclMagicEffect{};            // Excluded Magic Effects
-        static inline std::vector<ExclusionData> exclNPC[VTarget::Total];      // Excluded Actor Bases
-        static inline std::vector<ExclusionData> exclRef[VTarget::Total];      // Excluded object refs
-        static inline std::vector<ExclusionData> exclRace[VTarget::Total];     // Excluded races
-        static inline std::vector<ExclusionData> exclFaction[VTarget::Total];  // Excluded factions
+        static inline std::vector<ExclusionData> exclLocAll{};                               // Always disabled locations
+        static inline std::vector<ExclusionData> exclLocTp{};                                // Teleport only disabled locations
+        static inline std::vector<ExclusionData> exclMagicEffect{};                          // Excluded Magic Effects
+        static inline std::array<std::vector<ExclusionData>, VTarget::Total> exclNPC{};      // Excluded Actor Bases
+        static inline std::array<std::vector<ExclusionData>, VTarget::Total> exclRef{};      // Excluded object refs
+        static inline std::array<std::vector<ExclusionData>, VTarget::Total> exclRace{};     // Excluded races
+        static inline std::array<std::vector<ExclusionData>, VTarget::Total> exclFaction{};  // Excluded factions
     };
 
 }  // namespace Acheron

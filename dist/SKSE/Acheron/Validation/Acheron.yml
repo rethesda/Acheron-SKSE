@@ -4,11 +4,17 @@ LocationA:
       - GetStage 0x00047AE6 == 10 OR    # Brawl Quest
       - GetStage 0x02007C25 == 60 OR    # Harkon
       - GetStage 0x02002853 == 120 OR   # Gelebor
+      - GetStage 0x0001F258 == 30 OR    # Ancano
+  - FormID: 0
+    Conditions:
       - GetStage 0x0003CEDA < 200 AND   # Sanctuary Raid
       - GetStage 0x0003CEDA >= 10 OR
-      - GetStage 0x0001F258 == 30 OR    # Ancano
+  - FormID: 0
+    Conditions:
       - GetStage 0x040179D7 >= 400 AND  # Miraak
       - GetStage 0x040179D7 < 500 OR
+  - FormID: 0
+    Conditions:
       - GetStage 0x0003372B > 1 AND    # MQ101
       - GetStage 0x0003372B < 250 OR
 
@@ -34,8 +40,8 @@ ActorBase:
   - FormID: 0
     Conditions:
       - IsChild == 1 OR
-      - IsCurrentFurnitureObject 00083040 == 1 OR # DA02Pillar
-      - IsCurrentFurnitureObject 000E743E == 1 OR # BoethiahPillarFurniture01
+      - IsCurrentFurnitureObj 00083040 == 1 OR # DA02Pillar
+      - IsCurrentFurnitureObj 000E743E == 1 OR # BoethiahPillarFurniture01
   - 0x0003C57C  # Paarthurnax
   - 0x0200A877  # DLC1 Gelebor
   - 0x020030D8  # Durnehviir

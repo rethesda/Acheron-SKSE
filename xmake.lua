@@ -169,8 +169,8 @@ target(PROJECT_NAME)
     add_packages("yaml-cpp", "magic_enum", "nlohmann_json", "simpleini")
 
     -- CommonLib dependency
-        add_deps(get_config("gamever") == "0" and "commonlibsse-ng" or "commonlibsse")
-        add_rules((get_config("gamever") == "0" and "commonlibsse-ng.plugin" or "commonlibsse.plugin"), {
+    add_deps(get_config("gamever") == "0" and "commonlibsse-ng" or "commonlibsse")
+    add_rules((get_config("gamever") == "0" and "commonlibsse-ng.plugin" or "commonlibsse.plugin"), {
         name = PROJECT_NAME,
         author = "KrisV777",
         description = "A death alternative framework for Skyrim SE."

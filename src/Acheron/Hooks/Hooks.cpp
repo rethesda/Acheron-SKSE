@@ -590,7 +590,7 @@ namespace Acheron
                 RE::SendHUDMessage::ShowHUDMessage(base.c_str());
             }
             a_victim->RemoveItem(item, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
-        } else if (Settings::bStripDrop) {
+        } else if (Settings::bStripDrop && item->HasWorldModel()) {
             a_victim->RemoveItem(item, 1, RE::ITEM_REMOVE_REASON::kDropping, nullptr, nullptr);
         } else if (!a_victim->IsPlayerRef()) {
             // store armor for re-equipping on combat end, since NPC normally dont do it on their own..

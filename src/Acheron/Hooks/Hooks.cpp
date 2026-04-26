@@ -105,7 +105,7 @@ namespace Acheron
         }
 
         const auto data = Defeat::GetVictimData(a_player->GetFormID());
-        if (!data) {
+        if (!data && !Defeat::IsPacified(a_player)) {
             if (Validation::CanProcessDamage())
                 CalcDamageOverTime(a_player);
             return;
@@ -122,8 +122,7 @@ namespace Acheron
 
         if (Settings::iKdFallbackTimer) {
             const auto calendar = RE::Calendar::GetSingleton();
-            auto days_passed = calendar->GetDaysPassed() - data->registered_at;
-            auto seconds_passed = days_passed * 24 * 60 * 60;
+            const auto seconds_passed = data->GetSecondsDefeated();
             if (seconds_passed >= Settings::iKdFallbackTimer * calendar->GetTimescale()) {
                 Defeat::RescueDelayed(a_player, true);
                 return;
@@ -173,11 +172,20 @@ namespace Acheron
     void Hooks::UpdateCharacter(RE::Character* a_this, float a_delta)
     {
         _UpdateCharacter(a_this, a_delta);
-        if (!Validation::CanProcessDamage() || a_this->IsCommandedActor() || !IsNPC(a_this))
-            return;
-        if (Defeat::IsDamageImmune(a_this))
-            return;
 
+        const auto data = Defeat::GetVictimData(a_this->GetFormID());
+        if (data) {
+            if (data->allow_recovery) {
+                const auto calendar = RE::Calendar::GetSingleton();
+                const auto seconds_passed = data->GetSecondsDefeated();
+                if (seconds_passed >= Settings::iNPCRescueTimer * calendar->GetTimescale()) {
+                    Defeat::RescueActor(a_this, true);
+                }
+            }
+            return;
+        } else if (!Validation::CanProcessDamage() || a_this->IsCommandedActor() || !IsNPC(a_this)) {
+            return;
+        }
         CalcDamageOverTime(a_this);
     }
 

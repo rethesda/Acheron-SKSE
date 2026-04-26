@@ -135,6 +135,7 @@ Event OnPageReset(string page)
     AddSliderOptionST("recoverhealfallback", "$Achr_RecHealFallback", GetSettingInt("iKdFallbackTimer"), "{0}s")
     AddMenuOptionST("FollowerRescue", "$Achr_FollowerRescue", _FollowerRescue[GetSettingInt("iFollowerRescue")])
     AddToggleoptionST("NPCRescueReload", "$Achr_NPCRescueReload", GetSettingBool("bNPCRescueReload"))
+    AddSliderOptionST("NPCRescueTimer", "$Achr_NPCRescueTimer", GetSettingInt("iNPCRescueTimer"), "{0}s")
 
     AddHeaderOption("$Achr_Stripping")
     AddSliderOptionST("stripchance", "$Achr_StripChance", GetSettingFloat("fStripChance"), "{1}%")
@@ -327,6 +328,12 @@ Event OnSliderOpenST()
 		SetSliderDialogDefaultValue(90)
 		SetSliderDialogRange(0, 300)
 		SetSliderDialogInterval(5)
+  ElseIf (s[0] == "NPCRescueTimer")
+    SetSliderDialogStartValue(GetSettingInt("iNPCRescueTimer"))
+    SetSliderDialogDefaultValue(450)
+    SetSliderDialogRange(0, 600)
+    SetSliderDialogInterval(10)
+
   ; --------------- Events
   ElseIf(s[0] == "event")
     int i = s[1] as int
@@ -378,6 +385,9 @@ Event OnSliderAcceptST(float value)
 	ElseIf(s[0] == "recoverhealfallback")
 		SetSettingInt("iKdFallbackTimer", value as int)
 		SetSliderOptionValueST(value, "{0}s")
+  ElseIf (s[0] == "NPCRescueTimer")
+    SetSettingInt("iNPCRescueTimer", value as int)
+    SetSliderOptionValueST(value, "{0}s")
   ; --------------- Events
   ElseIf(s[0] == "event")
     int i = s[1] as int
@@ -486,7 +496,9 @@ Event OnHighlightST()
   ElseIf(s[0] == "recoverhealfallback")
     SetInfoText("$Achr_RecHealFallbackHighlight")
   ElseIf(s[0] == "NPCRescueReload")
-    SetInfoText(("$Achr_NPCRescueReloadHighlight"))
+    SetInfoText("$Achr_NPCRescueReloadHighlight")
+  ElseIf(s[0] == "NPCRescueTimer")
+    SetInfoText("$Achr_NPCRescueTimerHighlight")
   ; --------------- Stripping
   ElseIf(s[0] == "strips")
     int i = s[1] as int

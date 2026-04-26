@@ -26,6 +26,8 @@ namespace Acheron
               registered_at(a_registertime) {}
             ~VictimData() = default;
 
+            float GetSecondsDefeated() const;
+
             float registered_at;              // GameDaysPassed at construction
             bool allow_recovery{ true };      // if this actor may passively recover
             bool mark_for_recovery{ false };  // Rescue this actor the next time they load in?

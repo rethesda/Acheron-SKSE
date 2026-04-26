@@ -26,6 +26,7 @@ MCM_SETTING(fKdHealthThresh, 0.20f)
 MCM_SETTING(iKdFallbackTimer, 90)
 MCM_SETTING(iFollowerRescue, 1)
 MCM_SETTING(bNPCRescueReload, true)
+MCM_SETTING(iNPCRescueTimer, 90)
 
 MCM_SETTING(bLethalEssential, true)
 MCM_SETTING(fLethalPlayer, 100.0f)

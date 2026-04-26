@@ -325,6 +325,14 @@ namespace Acheron
         }
     }
 
+
+    float Defeat::VictimData::GetSecondsDefeated() const
+    {
+        const auto calendar = RE::Calendar::GetSingleton();
+        const auto dayPassed = calendar->GetDaysPassed() - registered_at;
+        return dayPassed * 24 * 60 * 60;
+    }
+
     ///
     /// Serialization
     ///

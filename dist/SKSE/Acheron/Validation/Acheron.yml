@@ -104,6 +104,8 @@ Assailant:
     - 0x00034D97  # Estomo (MG07)
 
 Victim:
+  Reference:
+    - 0x000A733C  # Vigilant Tyranus (DA10)
   ActorBase:
     - FormID: 0x00013387 # Anton
       Conditions:

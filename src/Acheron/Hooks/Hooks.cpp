@@ -105,7 +105,7 @@ namespace Acheron
         }
 
         const auto data = Defeat::GetVictimData(a_player->GetFormID());
-        if (!data && !Defeat::IsPacified(a_player)) {
+        if (!data) {
             if (Validation::CanProcessDamage())
                 CalcDamageOverTime(a_player);
             return;

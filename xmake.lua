@@ -288,6 +288,7 @@ target("assets")
 
     add_installfiles("dist/(Interface/Acheron/**)")
     add_installfiles("dist/(Interface/Translations/*.txt)")
+    add_installfiles("dist/(meshes/**)")
     add_installfiles("dist/(SKSE/CustomConsole/*.yml)")
     add_installfiles("dist/(SKSE/Acheron/**)")
 target_end()

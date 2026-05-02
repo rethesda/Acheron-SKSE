@@ -37,6 +37,10 @@ Event OnHunterPrideSelect(int aiOptionID, Actor akTarget)
   ElseIf(aiOptionID == 2)
     If(CheckEssential(akTarget))
       return
+    ElseIf (SKSE.GetPluginVersion("OpenAnimationReplacer") == -1 || SKSE.GetPluginVersion("PairedAnimationImprovements") == -1)
+      Debug.Trace("'OpenAnimationReplacer' or 'PairedAnimationImprovements' not detected, skipping animation")
+      akTarget.Kill(PlayerRef)
+      return
     EndIf
   
     ;preparation

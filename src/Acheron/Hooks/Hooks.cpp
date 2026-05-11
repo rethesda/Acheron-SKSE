@@ -201,8 +201,12 @@ namespace Acheron
 
     void Hooks::CalcDamageOverTime(RE::Actor* a_target)
     {
+#ifdef SKYRIM_SUPPORT_VR
         const auto magicTarget = a_target->AsMagicTarget();
         const auto effects = magicTarget ? magicTarget->GetActiveEffectList() : nullptr;
+#else
+        const auto effects = a_target->GetActiveEffectList();
+#endif
         if (!effects)
             return;
 
@@ -483,8 +487,12 @@ namespace Acheron
 
     float Hooks::GetIncomingEffectDamage(RE::Actor* subject)
     {
+#ifdef SKYRIM_SUPPORT_VR
         const auto magicTarget = subject->AsMagicTarget();
         const auto effects = magicTarget ? magicTarget->GetActiveEffectList() : nullptr;
+#else
+        const auto effects = subject->GetActiveEffectList();
+#endif
         if (!effects)
             return 0.0f;
 

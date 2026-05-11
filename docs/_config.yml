@@ -1,0 +1,20 @@
+title: Acheron
+description: SKSE64 Death Alternative framework for Skyrim SE.
+remote_theme: just-the-docs/just-the-docs
+color_scheme: dark
+
+url: "https://krisv-777.github.io"
+baseurl: "/Acheron"
+aux_links:
+  "GitHub":
+    - "https://github.com/KrisV-777/Acheron"
+aux_links_new_tab: true
+
+search_enabled: true
+heading_anchors: true
+
+callouts:
+  note:
+    color: blue
+  warning:
+    color: yellow

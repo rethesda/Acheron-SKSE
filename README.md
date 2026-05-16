@@ -48,9 +48,6 @@ xmake f -m release \
 ### Build
 
 ```sh
-# Create the Papyrus Project (.ppj) & Build
-./bootstrap.bat
-# Build the project directly
 xmake
 ```
 
